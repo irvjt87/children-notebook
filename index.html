@@ -3,370 +3,186 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Trip Checklist">
-  <title>Multi-Trip Manager with Reordering</title>
+  <title>Compact Store List</title>
   <style>
-    :root {
-      --bg-color: #0f172a;
-      --card-bg: #1e293b;
-      --card-border: #334155;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --accent-blue: #2563eb;
-      --accent-blue-hover: #1d4ed8;
-      --green: #16a34a;
-      --yellow: #d97706;
-      --red: #dc2626;
-      --radius: 12px;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-
-    body { background-color: var(--bg-color); color: var(--text-main); padding: 16px; padding-bottom: 60px; max-width: 900px; margin: 0 auto; }
-
-    header { border-bottom: 1px solid var(--card-border); padding-bottom: 16px; margin-bottom: 20px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: #121212; color: #e0e0e0; padding: 8px; max-width: 480px; margin: 0 auto; font-size: 13px; }
     
-    .trip-manager-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; background: #070d19; padding: 10px; border-radius: var(--radius); border: 1px solid var(--card-border); }
-    .trip-manager-bar label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
-    .trip-select { background: #0f172a; color: white; border: 1px solid var(--card-border); padding: 6px 10px; border-radius: 6px; font-size: 0.95rem; font-weight: 600; flex: 1; min-width: 180px; }
+    /* Header Controls */
+    .bar { display: flex; gap: 6px; margin-bottom: 8px; }
+    select, input, button { font-size: 13px; padding: 6px 8px; border-radius: 6px; border: 1px solid #333; background: #1e1e1e; color: #fff; outline: none; }
+    select { flex: 1; font-weight: bold; background: #2a2a2a; }
+    .btn { background: #2c6bed; color: white; border: none; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .btn-danger { background: #cf6679; color: #000; }
     
-    .btn-sm { background: var(--card-bg); color: var(--text-main); border: 1px solid var(--card-border); padding: 6px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
-    .btn-sm:hover { border-color: #60a5fa; }
-    .btn-danger { color: #f87171; }
-
-    .header-main { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-    .header-title-wrapper { display: flex; align-items: center; gap: 8px; }
-    h1 { font-size: 1.4rem; font-weight: 700; color: var(--text-main); }
-    .btn-rename { background: transparent; border: none; color: #60a5fa; cursor: pointer; font-size: 0.85rem; text-decoration: underline; }
-
-    .btn-add { background: var(--accent-blue); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; }
-    .btn-add:active { background: var(--accent-blue-hover); }
-
-    /* Form Panel */
-    .add-panel { background: var(--card-bg); border: 1px solid var(--accent-blue); border-radius: var(--radius); padding: 16px; margin-bottom: 20px; display: none; }
-    .add-panel.open { display: block; }
-    .add-panel h2 { font-size: 1rem; margin-bottom: 12px; color: var(--text-main); }
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
-    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--card-border); background: #0f172a; color: white; font-size: 0.95rem; }
-    .form-group textarea { resize: vertical; min-height: 60px; }
-    .form-actions { display: flex; gap: 8px; justify-content: flex-end; }
-    .btn-cancel { background: transparent; border: 1px solid var(--card-border); color: var(--text-muted); padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; }
-
-    /* Checklist Grid */
-    .section-title { font-size: 1.1rem; margin-bottom: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-bottom: 32px; }
-
-    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 14px; display: flex; flex-direction: column; justify-content: space-between; position: relative; gap: 10px; }
-    .card.completed { opacity: 0.65; border-color: #1e3a8a; }
-    .card.completed .item-name { text-decoration: line-through; }
-    .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    /* Add Form */
+    .add-form { display: flex; gap: 4px; background: #1e1e1e; padding: 6px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #2a2a2a; }
+    .add-form input[name="bin"] { width: 65px; text-transform: uppercase; text-align: center; }
+    .add-form input[name="item"] { flex: 1; }
     
-    .order-badge { background: #070d19; border: 1px solid var(--card-border); color: #60a5fa; border-radius: 6px; font-size: 0.8rem; font-weight: 700; padding: 2px 6px; display: flex; align-items: center; gap: 4px; }
-    .order-input-inline { width: 42px; background: transparent; border: none; color: #60a5fa; font-weight: 700; text-align: center; font-size: 0.85rem; }
-
-    .item-name { font-size: 1.05rem; font-weight: 600; color: var(--text-main); margin-bottom: 2px; }
-    .item-category { font-size: 0.75rem; color: #60a5fa; background: #1e3a8a; padding: 2px 8px; border-radius: 12px; display: inline-block; }
+    /* List Layout */
+    .list { display: flex; flex-direction: column; gap: 4px; }
+    .row { display: flex; align-items: center; gap: 6px; background: #1e1e1e; padding: 6px 8px; border-radius: 6px; border-left: 3px solid #00e676; }
+    .row.unneeded { border-left-color: #444; opacity: 0.45; }
     
-    .card-actions { display: flex; gap: 6px; }
-    .btn-icon { background: none; border: none; color: #64748b; font-size: 0.95rem; cursor: pointer; padding: 2px 4px; border-radius: 4px; }
-    .btn-icon:hover { color: var(--text-main); background: #0f172a; }
-
-    .card-body { display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; color: var(--text-muted); }
-    .field-label { font-weight: 600; color: #94a3b8; }
-    .field-content { color: #cbd5e1; white-space: pre-wrap; word-break: break-word; }
-
-    /* Status Group */
-    .status-group { display: flex; background: #0f172a; padding: 3px; border-radius: 8px; gap: 2px; }
-    .status-btn { flex: 1; border: none; background: transparent; color: var(--text-muted); padding: 8px 0; font-size: 0.8rem; font-weight: 600; border-radius: 6px; cursor: pointer; text-align: center; }
-    .status-btn.selected-pending { background: var(--yellow); color: white; }
-    .status-btn.selected-done { background: var(--green); color: white; }
+    /* Data Fields */
+    .bin { font-family: monospace; font-weight: bold; font-size: 11px; background: #2a2a2a; color: #ffb74d; padding: 2px 5px; border-radius: 4px; min-width: 42px; text-align: center; flex-shrink: 0; }
+    .item-name { flex: 1; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    
+    /* Toggle Switch */
+    .toggle { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; border: none; cursor: pointer; min-width: 55px; text-align: center; flex-shrink: 0; }
+    .toggle.need { background: #00e676; color: #000; }
+    .toggle.done { background: #333; color: #888; }
+    
+    .actions { display: flex; gap: 2px; flex-shrink: 0; }
+    .icon-btn { background: none; border: none; color: #888; padding: 2px 4px; font-size: 12px; cursor: pointer; }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="trip-manager-bar">
-      <label for="tripSelect">Select Trip:</label>
-      <select id="tripSelect" class="trip-select" onchange="switchTrip(this.value)"></select>
-      <button class="btn-sm" onclick="addNewTrip()">+ New Trip</button>
-      <button class="btn-sm btn-danger" onclick="deleteCurrentTrip()">Delete</button>
-    </div>
-
-    <div class="header-main">
-      <div class="header-title-wrapper">
-        <h1 id="activeTripTitle">Springfield/Branson Trip</h1>
-        <button class="btn-rename" onclick="renameCurrentTrip()">Rename</button>
-      </div>
-      <button class="btn-add" onclick="openFormPanel()">+ Add Item</button>
-    </div>
-  </header>
-
-  <div class="add-panel" id="itemPanel">
-    <h2 id="panelTitle">Add Item to Trip</h2>
-    <input type="hidden" id="editItemId" value="">
-    <div class="form-group">
-      <label for="newItemOrder">Sequence / Priority #</label>
-      <input type="number" id="newItemOrder" min="1" placeholder="1">
-    </div>
-    <div class="form-group">
-      <label for="newItemCategory">Category</label>
-      <select id="newItemCategory">
-        <option value="Packing">Packing</option>
-        <option value="Lodging">Lodging</option>
-        <option value="Transport">Transport</option>
-        <option value="Activity">Activity</option>
-        <option value="Documents">Documents</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="newItemName">Item Name</label>
-      <input type="text" id="newItemName" placeholder="e.g. Hotel Check-in, Hiking Shoes, Tickets">
-    </div>
-    <div class="form-group">
-      <label for="newItemDesc">Description</label>
-      <input type="text" id="newItemDesc" placeholder="e.g. Silver Dollar City pass #402">
-    </div>
-    <div class="form-group">
-      <label for="newItemAddressNotes">Address / Notes</label>
-      <textarea id="newItemAddressNotes" placeholder="e.g. 3000 W 76 Country Blvd, Branson, MO 65616"></textarea>
-    </div>
-    <div class="form-actions">
-      <button class="btn-cancel" onclick="closeFormPanel()">Cancel</button>
-      <button class="btn-add" id="saveItemBtn" onclick="saveItem()">Save Item</button>
-    </div>
+  <div class="bar">
+    <select id="storeSelect" onchange="switchStore()"></select>
+    <button class="btn" onclick="addStore()">+ Store</button>
   </div>
 
-  <div class="section-title">Checklist & Itinerary Details</div>
-  <div class="grid" id="checklistGrid"></div>
+  <form class="add-form" onsubmit="addItem(event)">
+    <input type="text" id="newBin" name="bin" placeholder="Bin/Aisle" autocomplete="off">
+    <input type="text" id="newItem" name="item" placeholder="New Item Name..." required autocomplete="off">
+    <button type="submit" class="btn">Add</button>
+  </form>
+
+  <div id="itemList" class="list"></div>
 
   <script>
-    const INITIAL_STATE = {
-      activeTripId: '1',
-      trips: [
-        {
-          id: '1',
-          name: 'Springfield/Branson Trip',
-          items: [
-            { id: '101', order: 1, category: 'Lodging', name: 'Cabin Rental', description: 'Confirmation #BR-9941', addressNotes: '76 Country Blvd, Branson, MO', status: 'pending' },
-            { id: '102', order: 2, category: 'Activity', name: 'Silver Dollar City Tickets', description: 'Day pass booked for Saturday', addressNotes: '399 Silver Dollar City Pkwy, Branson, MO', status: 'done' }
-          ]
-        }
-      ]
+    // System Data Architecture
+    let db = JSON.parse(localStorage.getItem('shopping_db')) || {
+      activeStore: "Walmart",
+      stores: {
+        "Walmart": [
+          { id: 1, bin: "A12", name: "Cereal", needed: true },
+          { id: 2, bin: "B4", name: "Milk", needed: true },
+          { id: 3, bin: "A1", name: "Bananas", needed: false }
+        ],
+        "Menards": [
+          { id: 4, bin: "14B", name: "Screws 1-1/2in", needed: true }
+        ]
+      }
     };
 
-    let appData = JSON.parse(localStorage.getItem('multi_trip_app_data')) || INITIAL_STATE;
-
-    function saveState() {
-      localStorage.setItem('multi_trip_app_data', JSON.stringify(appData));
-      render();
+    function save() {
+      localStorage.setItem('shopping_db', JSON.stringify(db));
     }
 
-    function getActiveTrip() {
-      return appData.trips.find(t => t.id === appData.activeTripId) || appData.trips[0];
+    function init() {
+      const select = document.getElementById('storeSelect');
+      select.innerHTML = '';
+      Object.keys(db.stores).forEach(store => {
+        const opt = document.createElement('option');
+        opt.value = store;
+        opt.textContent = store;
+        if (store === db.activeStore) opt.selected = true;
+        select.appendChild(opt);
+      });
+      renderList();
     }
 
-    function switchTrip(id) {
-      appData.activeTripId = id;
-      saveState();
+    function switchStore() {
+      db.activeStore = document.getElementById('storeSelect').value;
+      save();
+      renderList();
     }
 
-    function addNewTrip() {
-      const name = prompt('Enter New Trip Name:');
-      if (!name || !name.trim()) return;
+    function addStore() {
+      const name = prompt("Enter new store name:");
+      if (name && !db.stores[name]) {
+        db.stores[name] = [];
+        db.activeStore = name;
+        save();
+        init();
+      }
+    }
 
-      const newTrip = {
-        id: Date.now().toString(),
-        name: name.trim(),
-        items: []
+    function addItem(e) {
+      e.preventDefault();
+      const binInput = document.getElementById('newBin');
+      const itemInput = document.getElementById('newItem');
+      
+      const newItem = {
+        id: Date.now(),
+        bin: binInput.value.trim().toUpperCase() || "--",
+        name: itemInput.value.trim(),
+        needed: true
       };
 
-      appData.trips.push(newTrip);
-      appData.activeTripId = newTrip.id;
-      saveState();
+      db.stores[db.activeStore].push(newItem);
+      save();
+      
+      // Preserve Bin for fast batch entry, clear item text, prevent scroll jump
+      itemInput.value = '';
+      itemInput.focus();
+      renderList();
     }
 
-    function renameCurrentTrip() {
-      const trip = getActiveTrip();
-      const newName = prompt('Rename Trip:', trip.name);
-      if (newName && newName.trim()) {
-        trip.name = newName.trim();
-        saveState();
+    function toggleNeed(id) {
+      const items = db.stores[db.activeStore];
+      const target = items.find(i => i.id === id);
+      if (target) {
+        target.needed = !target.needed;
+        save();
+        renderList();
       }
     }
 
-    function deleteCurrentTrip() {
-      if (appData.trips.length <= 1) {
-        alert('You must keep at least one trip plan.');
-        return;
-      }
-      const trip = getActiveTrip();
-      if (confirm(`Delete entire "${trip.name}" trip itinerary?`)) {
-        appData.trips = appData.trips.filter(t => t.id !== trip.id);
-        appData.activeTripId = appData.trips[0].id;
-        saveState();
-      }
-    }
+    function editItem(id) {
+      const items = db.stores[db.activeStore];
+      const target = items.find(i => i.id === id);
+      if (!target) return;
 
-    function openFormPanel(itemId = null) {
-      const panel = document.getElementById('itemPanel');
-      const activeTrip = getActiveTrip();
-      panel.classList.add('open');
+      const newBin = prompt("Edit Bin/Location:", target.bin);
+      if (newBin === null) return;
+      const newName = prompt("Edit Item Name:", target.name);
+      if (newName === null) return;
 
-      if (itemId) {
-        // Edit Mode
-        const item = activeTrip.items.find(i => i.id === itemId);
-        document.getElementById('panelTitle').innerText = 'Edit Trip Item';
-        document.getElementById('editItemId').value = item.id;
-        document.getElementById('newItemOrder').value = item.order || 1;
-        document.getElementById('newItemCategory').value = item.category;
-        document.getElementById('newItemName').value = item.name;
-        document.getElementById('newItemDesc').value = item.description || '';
-        document.getElementById('newItemAddressNotes').value = item.addressNotes || '';
-        document.getElementById('saveItemBtn').innerText = 'Update Item';
-      } else {
-        // Add Mode
-        document.getElementById('panelTitle').innerText = 'Add Item to Trip';
-        document.getElementById('editItemId').value = '';
-        document.getElementById('newItemOrder').value = activeTrip.items.length + 1;
-        document.getElementById('newItemCategory').value = 'Packing';
-        document.getElementById('newItemName').value = '';
-        document.getElementById('newItemDesc').value = '';
-        document.getElementById('newItemAddressNotes').value = '';
-        document.getElementById('saveItemBtn').innerText = 'Save Item';
-      }
-      document.getElementById('newItemName').focus();
-    }
-
-    function closeFormPanel() {
-      document.getElementById('itemPanel').classList.remove('open');
-    }
-
-    function saveItem() {
-      const activeTrip = getActiveTrip();
-      const editId = document.getElementById('editItemId').value;
-      const orderVal = parseInt(document.getElementById('newItemOrder').value, 10) || (activeTrip.items.length + 1);
-      const category = document.getElementById('newItemCategory').value;
-      const name = document.getElementById('newItemName').value.trim();
-      const desc = document.getElementById('newItemDesc').value.trim();
-      const notes = document.getElementById('newItemAddressNotes').value.trim();
-
-      if (!name) return;
-
-      if (editId) {
-        // Update existing
-        const item = activeTrip.items.find(i => i.id === editId);
-        if (item) {
-          item.order = orderVal;
-          item.category = category;
-          item.name = name;
-          item.description = desc;
-          item.addressNotes = notes;
-        }
-      } else {
-        // Add new
-        activeTrip.items.push({
-          id: Date.now().toString(),
-          order: orderVal,
-          category: category,
-          name: name,
-          description: desc,
-          addressNotes: notes,
-          status: 'pending'
-        });
-      }
-
-      closeFormPanel();
-      saveState();
-    }
-
-    function updateItemOrderDirect(id, newOrderStr) {
-      const activeTrip = getActiveTrip();
-      const item = activeTrip.items.find(i => i.id === id);
-      const newOrder = parseInt(newOrderStr, 10);
-      if (item && !isNaN(newOrder) && newOrder > 0) {
-        item.order = newOrder;
-        saveState();
-      }
+      target.bin = newBin.trim().toUpperCase() || "--";
+      target.name = newName.trim();
+      save();
+      renderList();
     }
 
     function deleteItem(id) {
-      if (confirm('Delete this item permanently?')) {
-        const activeTrip = getActiveTrip();
-        activeTrip.items = activeTrip.items.filter(i => i.id !== id);
-        saveState();
-      }
+      db.stores[db.activeStore] = db.stores[db.activeStore].filter(i => i.id !== id);
+      save();
+      renderList();
     }
 
-    function setStatus(id, newStatus) {
-      const activeTrip = getActiveTrip();
-      const item = activeTrip.items.find(i => i.id === id);
-      if (item) {
-        item.status = newStatus;
-        saveState();
-      }
-    }
+    function renderList() {
+      const container = document.getElementById('itemList');
+      const items = db.stores[db.activeStore] || [];
 
-    function render() {
-      const activeTrip = getActiveTrip();
-
-      // Render Dropdown options
-      const tripSelect = document.getElementById('tripSelect');
-      tripSelect.innerHTML = appData.trips.map(t => `
-        <option value="${t.id}" ${t.id === activeTrip.id ? 'selected' : ''}>${t.name}</option>
-      `).join('');
-
-      // Render Header Title
-      document.getElementById('activeTripTitle').innerText = activeTrip.name;
-
-      // Two-tier sort: 1. Status ('pending' before 'done') -> 2. Priority Order Number
-      const sortedItems = [...activeTrip.items].sort((a, b) => {
-        if (a.status !== b.status) {
-          return a.status === 'pending' ? -1 : 1;
-        }
-        return (a.order || 0) - (b.order || 0);
+      // Sort Order: Needed (Yes -> No) | Bin Ascending | Item Ascending
+      items.sort((a, b) => {
+        if (a.needed !== b.needed) return a.needed ? -1 : 1;
+        const binCmp = a.bin.localeCompare(b.bin, undefined, { numeric: true, sensitivity: 'base' });
+        if (binCmp !== 0) return binCmp;
+        return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
       });
 
-      // Render Checklist Grid
-      const grid = document.getElementById('checklistGrid');
-      if (sortedItems.length === 0) {
-        grid.innerHTML = '<div style="color: var(--text-muted); grid-column: 1/-1;">No items added to this trip yet. Click "+ Add Item" above to start packing or planning.</div>';
-        return;
-      }
-
-      grid.innerHTML = sortedItems.map(item => `
-        <div class="card ${item.status === 'done' ? 'completed' : ''}">
-          <div class="card-header">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <div class="order-badge" title="Change priority number to reorder">
-                #<input type="number" class="order-input-inline" value="${item.order || 1}" min="1" onchange="updateItemOrderDirect('${item.id}', this.value)">
-              </div>
-              <div>
-                <div class="item-name">${item.name}</div>
-                <div class="item-category">${item.category}</div>
-              </div>
-            </div>
-            <div class="card-actions">
-              <button class="btn-icon" onclick="openFormPanel('${item.id}')" title="Edit Item">✏️</button>
-              <button class="btn-icon" onclick="deleteItem('${item.id}')" title="Delete Item">&times;</button>
-            </div>
-          </div>
-          <div class="card-body">
-            ${item.description ? `<div><span class="field-label">Desc:</span> <span class="field-content">${item.description}</span></div>` : ''}
-            ${item.addressNotes ? `<div><span class="field-label">Address/Notes:</span> <span class="field-content">${item.addressNotes}</span></div>` : ''}
-          </div>
-          <div class="status-group">
-            <button class="status-btn ${item.status === 'pending' ? 'selected-pending' : ''}" onclick="setStatus('${item.id}', 'pending')">Pending</button>
-            <button class="status-btn ${item.status === 'done' ? 'selected-done' : ''}" onclick="setStatus('${item.id}', 'done')">Completed</button>
+      container.innerHTML = items.map(item => `
+        <div class="row ${item.needed ? '' : 'unneeded'}">
+          <span class="bin">${item.bin}</span>
+          <span class="item-name">${item.name}</span>
+          <button class="toggle ${item.needed ? 'need' : 'done'}" onclick="toggleNeed(${item.id})">
+            ${item.needed ? 'NEED' : 'OFF'}
+          </button>
+          <div class="actions">
+            <button class="icon-btn" onclick="editItem(${item.id})">✏️</button>
+            <button class="icon-btn" onclick="deleteItem(${item.id})">🗑️</button>
           </div>
         </div>
       `).join('');
     }
 
-    // Initial load
-    render();
+    init();
   </script>
 </body>
 </html>

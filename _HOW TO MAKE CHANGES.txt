@@ -3,7 +3,7 @@ In Powershell:
 
 git add .
 
-git commit -m "Trip-Checklist Update"
+git commit -m "Irvin's - Shopping List Update"
 
 git push
 
