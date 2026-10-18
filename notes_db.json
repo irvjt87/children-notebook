@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1792356670893,
+    "text": "Welcome to Family Note Tracker! Tag kids, update status, and configure GitHub PAT sync in settings.",
+    "kids": [
+      "Violet",
+      "Benji"
+    ],
+    "status": "open",
+    "createdAt": "2026-10-18T20:51:10.893Z"
+  }
+]
